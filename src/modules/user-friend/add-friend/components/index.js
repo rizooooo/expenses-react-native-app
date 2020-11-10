@@ -1,0 +1,1 @@
+export { default as AvatarPicker } from './avatar-picker/avatar-picker.component';

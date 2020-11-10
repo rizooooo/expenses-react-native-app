@@ -1,0 +1,1 @@
+export { default as AddFriendOptions } from './header.options';
