@@ -1,12 +1,14 @@
 import React from 'react'
-import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View, KeyboardAvoidingView } from 'react-native';
 import { Color, Font } from '../../../../../core/constants';
 import { Button } from '../../../../../shared';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import AddTransaction from '../../../add-transaction';
 const ModalMenu = ({ modalHandler }) => {
     const [modalVisible, setModalVisible] = modalHandler;
     return (
+
         <View style={styles.centeredView}>
             <Modal
                 animationType="slide"
@@ -16,16 +18,20 @@ const ModalMenu = ({ modalHandler }) => {
                     Alert.alert("Modal has been closed.");
                 }}
             >
-                <View style={styles.centeredView}>
+                <KeyboardAvoidingView>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalText}><Icon name='user' /> Edit Transaction</Text>
-                        <Text style={styles.modalText}><Icon name='trash'/> Delete Transaction</Text>
+                        <AddTransaction isModal />
+                        {/* <Text style={styles.modalText}><Icon name='user' /> Edit Transaction</Text>
+                        <Text style={styles.modalText}><Icon name='trash' /> Delete Transaction</Text>
 
-                        <Button onPress={() => setModalVisible(!modalVisible)} title={'Cancel'} color={Color.Red} />
+                        <Button onPress={() => setModalVisible(!modalVisible)} title={'Cancel'} color={Color.Red} /> */}
                     </View>
-                </View>
-            </Modal>
-        </View>
+                    </KeyboardAvoidingView>
+                
+                </Modal>
+            </View >
+      
+
     )
 }
 
@@ -38,10 +44,10 @@ const styles = StyleSheet.create({
     modalView: {
         width: '80%',
         margin: 0,
-        backgroundColor: Color.White,
+        backgroundColor: Color.Blue,
         borderRadius: 20,
         paddingVertical: 20,
-        alignItems: "center",
+        alignItems: "stretch",
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -65,12 +71,14 @@ const styles = StyleSheet.create({
     modalText: {
         // marginBottom: 15,
         // textAlign: "center",
+        fontSize: 15,
+        backgroundColor: '#fff',
         fontFamily: Font.Bold,
-        borderColor: Color.Gray,
+        //  borderColor: Color.Gray,
         //borderRadius: 5,
         borderLeftWidth: 0,
-        borderRightWidth: 0, 
-        borderWidth: 1,
+        borderRightWidth: 0,
+        // borderWidth: 1,
         paddingVertical: 20,
         paddingHorizontal: 10,
         width: '100%',

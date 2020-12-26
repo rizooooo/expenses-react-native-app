@@ -1,33 +1,61 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useEffect } from 'react'
+import { StyleSheet, Text, View, Switch } from 'react-native'
 import { Color, Font } from '../../../core/constants';
 import { Button } from '../../../shared';
 import Input from '../../../shared/input/input.component';
 import { useForm, Controller } from "react-hook-form";
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import CoreService from '../../../core/core-service';
 import { Tables } from '../../../core/table-list.core';
 
 const AddTransaction = () => {
 
     const { container, formGroup, formLabel } = styles;
-    const { control, handleSubmit, errors } = useForm();
-    const { params } = useRoute()
+
+    const { params } = useRoute();
+    const { goBack, setOptions } = useNavigation();
+
+    const RECORD = params && params.transaction || null;
+
+
+    const { control, handleSubmit, errors } = useForm({ defaultValues: RECORD ? { title: RECORD.title, amount: RECORD.amount.toString(), paid: RECORD.paid } : {} });
+
+
+    useEffect(() => {
+        if (RECORD) {
+            setOptions({ headerTitle: RECORD.title })
+        }
+    }, [RECORD]);
 
     const onSubmit = async (data) => {
-        const request = {
+        console.log(data, '@DATA');
+        let request = {
             ...data,
             friend: params.friend,
             amount: +data.amount
         }
-        const res = await CoreService.CREATE(Tables.TRANSACTION, request, { relation: 'friend' });
-        console.log(res)
+
+        if (params && !params.transaction) {
+            if (request.paid) {
+                request = { ...request, date_paid: Date.now() }
+            }
+            await CoreService.CREATE(Tables.TRANSACTION, request, { relation: 'friend' });
+        } else {
+            if (data.paid) {
+                data = { ...data, amount: +data.amount, date_paid: Date.now() }
+            } else {
+                data = { ...data, amount: +data.amount }
+            }
+            await CoreService.UPDATE(params.transaction, data)
+        }
+
+        goBack();
     }
 
     return (
         <View style={container}>
             <View style={formGroup}>
-                <Text style={formLabel}>Title</Text>
+                <Text style={formLabel}>Description</Text>
 
                 <Controller
                     control={control}
@@ -36,7 +64,7 @@ const AddTransaction = () => {
                             onBlur={onBlur}
                             onChangeText={value => onChange(value)}
                             value={value}
-                            placeholder={'Load, GcashHH, etc'}
+                            placeholder={'Load, Shopee, etc'}
                         />
                     )}
                     name="title"
@@ -60,12 +88,41 @@ const AddTransaction = () => {
                         />
                     )}
                     name="amount"
-                    rules={{ required: true }}
-                    defaultValue=""
+                    rules={{
+                        required: true,
+                        pattern: {
+                            value: /^[0-9]+(\.[0-9]{1,2})?$/,
+                            message: 'Invalid Amount'
+                        }
+                    }}
+                    defaultValue={''}
                 />
-                {errors.amount && <Text style={{ color: Color.Warning, fontFamily: Font.Bold, marginVertical: 5 }}>This is required.</Text>}
+                {errors.amount && errors.amount.type && errors.amount.type === 'pattern' && <Text style={{ color: Color.Warning, fontFamily: Font.Bold, marginVertical: 5 }}>{errors && errors.amount.message}</Text>}
+                {errors.amount && errors.amount.type && errors.amount.type === 'required' && <Text style={{ color: Color.Warning, fontFamily: Font.Bold, marginVertical: 5 }}>This is required.</Text>}
             </View>
-            <Button color={Color.Green} title={'Create Transaction'} onPress={handleSubmit(onSubmit)} />
+
+            <View style={formGroup}>
+
+                <Controller
+                    control={control}
+                    render={({ onChange, value }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 10 }}>
+                            <Text style={formLabel}>Already Paid</Text>
+                            <Switch
+                                trackColor={{ false: Color.Gray, true: Color.Green }}
+                                thumbColor={value ? Color.White : Color.White}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={onChange}
+                                value={value}
+                            />
+                        </View>
+
+                    )}
+                    name="paid"
+                    defaultValue={false}
+                />
+            </View>
+            <Button color={RECORD ? Color.Orange : Color.Green} title={`${RECORD ? 'Update' : 'Create'} Transaction`} onPress={handleSubmit(onSubmit)} />
         </View>
     )
 }

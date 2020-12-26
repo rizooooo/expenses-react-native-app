@@ -52,7 +52,7 @@ const App = () => {
         }}
       >
         <Tab.Screen options={{ tabBarIcon: () => <Icon name="user-friends" size={20} color={Color.Blue} /> }} name="Persons" component={UserFriendModule} />
-        <Tab.Screen options={{ tabBarIcon: () => <Icon name="user-circle" size={25} color={Color.Blue} /> }} name="Settings" component={SettingsScreen} />
+        {/* <Tab.Screen options={{ tabBarIcon: () => <Icon name="user-circle" size={25} color={Color.Blue} /> }} name="Settings" component={SettingsScreen} /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );

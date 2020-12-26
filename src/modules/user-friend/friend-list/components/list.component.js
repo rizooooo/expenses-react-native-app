@@ -16,7 +16,7 @@ const List = ({ friends }) => {
     return (
         <FlatList
             keyExtractor={(item, index) => item.name}
-            data={friends}
+            data={friends.reverse()}
             renderItem={(data) => <FriendItem friend={data.item} />}
             showsVerticalScrollIndicator={false}
         />

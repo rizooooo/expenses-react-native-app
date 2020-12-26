@@ -6,30 +6,22 @@ import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import CoreService from '../../../../../core/core-service';
-import { Tables } from '../../../../../core/table-list.core';
 import withObservables from '@nozbe/with-observables';
 import { ModalMenu } from '..';
+import { useNavigation } from '@react-navigation/native';
 
 const TransactionItemComponent = ({ transaction }) => {
 
 
     const { container, titleText, timeLabel, paidLabel } = styles;
     const [modalVisible, setModalVisible] = useState(false);
-    const togglePaidStatus = async () => {
-        let req = {
-            paid: transaction.paid ? false : true
-        }
+    const { navigate } = useNavigation();
 
-        if (!transaction.paid) {
-            req = { ...req, date_paid: Date.now() }
-        }
-        const res = await CoreService.UPDATE(transaction, req)
-        console.log(res);
-    }
+
     return (
         <>
             <ModalMenu modalHandler={[modalVisible, setModalVisible]} />
-            <Pressable onPress={togglePaidStatus} onLongPress={() => setModalVisible(true)} style={{ ...container, backgroundColor: transaction.paid ? Color.Green : Color.Red }} key={transaction.id}>
+            <Pressable onPress={() => navigate('UserAddTransaction', { transaction })} style={{ ...container, backgroundColor: transaction.paid ? Color.Green : Color.Red }} key={transaction.id}>
                 <View>
                     <Text style={titleText}>
                         {transaction.paid && <Icon name={'check'} color={Color.White} />}

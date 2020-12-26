@@ -13,7 +13,7 @@ const TransactionList = ({ transactions, search }) => {
 
     return (
         <FlatList
-            data={transactions}
+            data={transactions.reverse()}
             keyExtractor={(item, index) => item.id}
             renderItem={data => <ListItem transaction={data.item} />}
         />
